@@ -111,6 +111,7 @@ void APlayerCharacter::Cancel()
 	if (bInspection)
 		InspectedObject->ReturnToStart();
 		bInspection = false;
+	OnCancelInputDelegate.Broadcast();
 }
 
 #pragma endregion Movement

@@ -25,11 +25,13 @@ class UTimelineComponent;
 class UPhysicalMaterial;
 class AItems;
 class AInspectables;
+class AReads;
 
 #pragma endregion Forward Declarations
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSeeingInteractableSignature, UClass*, InteractableType);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteractingSignature, AActor*, InteractedObject);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCancelInput);
 
 UCLASS()
 class THESEVENTHPROOF_API APlayerCharacter : public ACharacter
@@ -45,6 +47,7 @@ public:
 	
 	UPROPERTY(BlueprintAssignable) FOnSeeingInteractableSignature OnSeeingInteractable;
 	UPROPERTY(BlueprintAssignable) FOnInteractingSignature OnInteracting;
+	UPROPERTY(BlueprintAssignable) FOnCancelInput OnCancelInputDelegate;
 	
 #pragma endregion Delegates
 

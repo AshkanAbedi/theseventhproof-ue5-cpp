@@ -18,6 +18,10 @@ AReads::AReads()
 
 void AReads::Interact_Implementation()
 {
-	Super::Interact_Implementation();
-	// Bring up the Reading UI Widget and pass in the ReadImage and Description; Should do it in BP_BaseHUD.
+	if (!bIsReading)
+	{
+		AudioComponent->SetSound(ReadSound);
+		AudioComponent->Play();
+		bIsReading = true;
+	}
 }

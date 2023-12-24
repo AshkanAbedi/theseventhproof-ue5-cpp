@@ -18,12 +18,13 @@ class THESEVENTHPROOF_API AReads : public ABaseInteractable
 	GENERATED_BODY()
 public:
 	AReads();
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components") bool bIsReading;
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components") TObjectPtr<USceneComponent> SceneComponent;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components") TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") TObjectPtr<UAudioComponent> AudioComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") TObjectPtr<USoundCue> PickUpSound;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") TObjectPtr<USoundCue> ReadSound;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") TObjectPtr<UTexture2D> ReadImage;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") FText Description;
 
