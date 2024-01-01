@@ -7,6 +7,9 @@
 #include "Curves/CurveFloat.h"
 #include "Components/AudioComponent.h"
 #include "Sound/SoundCue.h"
+#include "Character/PlayerCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "Objects/Items.h"
 
 ADoors::ADoors()
 {
@@ -22,11 +25,17 @@ ADoors::ADoors()
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
 }
 
+void ADoors::BeginPlay()
+{
+	Super::BeginPlay();
+	PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+}
+
 void ADoors::Interact_Implementation()
 {
 	if (bIsToggling) return;
 	
-	if (RequiredKey == EKeyNames::EKN_None)
+	if (!bIsLocked)
 	{
 		if (!bIsOpen && IsValid(TogglingCurve)) {
 			FOnTimelineFloat TimelineTickDelegate;
@@ -60,11 +69,22 @@ void ADoors::Interact_Implementation()
 			TimelineComponent->SetTimelineFinishedFunc(TimelineFinishedDelegate);
 		}
 		
-	} else if (RequiredKey != EKeyNames::EKN_None)
+	} else if (bIsLocked)
 	{
+		for (const auto Element : PlayerCharacter->Inventory)
+		{
+			const EItemNames ItemName = Cast<AItems>(Element)->GetItemName();
+			if (ItemName == RequiredItem)
+			{
+				bIsLocked = false;
+				AudioComponent->SetSound(UnlockingSound);
+				AudioComponent->Play();
+				return;
+			}	
+		}
+		
 		AudioComponent->SetSound(LockedSound);
 		AudioComponent->Play();
-		return;
 	}
 	
 }

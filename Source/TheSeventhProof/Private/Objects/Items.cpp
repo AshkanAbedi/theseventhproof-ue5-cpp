@@ -6,6 +6,7 @@
 #include "Components/AudioComponent.h"
 #include "Sound/SoundCue.h"
 #include "Character/PlayerCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 AItems::AItems()
 {
@@ -17,23 +18,20 @@ AItems::AItems()
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
 }
 
-void AItems::Interact_Implementation()
+void AItems::BeginPlay()
 {
-	if (IsValid(GetWorld()->GetFirstPlayerController())) {
-
-		if (IsValid(PickUpSound)) {
-			AudioComponent->SetSound(PickUpSound);
-			AudioComponent->Play();
-		}
-		FTimerHandle DestroyTimerHandle;
-		Cast<APlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn())->AddToInventory(this);
-		this->SetActorHiddenInGame(true);
-		GetWorld()->GetTimerManager().SetTimer(DestroyTimerHandle, this, &AItems::DestroyActor, PickUpSound->Duration, false);
-	}
+	Super::BeginPlay();
+	PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 }
 
-void AItems::DestroyActor()
+void AItems::Interact_Implementation()
 {
-	Destroy();
+	if (IsValid(PlayerCharacter) && IsValid(PickUpSound)) {
+		AudioComponent->SetSound(PickUpSound);
+		AudioComponent->Play();
+		PlayerCharacter->AddToInventory(this);
+		this->SetActorHiddenInGame(true);
+		this->SetActorEnableCollision(false);
+	}
 }
 

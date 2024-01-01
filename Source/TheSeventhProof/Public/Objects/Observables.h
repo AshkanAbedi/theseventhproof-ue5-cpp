@@ -19,7 +19,6 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components") TObjectPtr<USceneComponent> SceneComponent;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components") TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Properties") FText StoryText;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Properties") float StoryDelay;
 

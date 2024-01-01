@@ -16,6 +16,7 @@ AObservables::AObservables()
 
 void AObservables::Interact_Implementation()
 {
-	// Super::Interact_Implementation();
+	// if (PlayerCharacter->PlayerStates == EPlayerState::EPS_Normal)
+	// 	PlayerCharacter->PlayerStates = EPlayerState::EPS_Observing;
 }
 

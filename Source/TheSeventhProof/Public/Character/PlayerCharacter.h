@@ -20,9 +20,10 @@
 class USpringArmComponent;
 class UCameraComponent;
 class USpotLightComponent;
-class UInputAction;
 class UTimelineComponent;
 class UPhysicalMaterial;
+class UPostProcessComponent;
+class UInputAction;
 class AItems;
 class AInspectables;
 class AReads;
@@ -58,6 +59,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Flash Light") TObjectPtr<USpotLightComponent> FlashLight;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InspectableItem") TObjectPtr<USceneComponent> InspectableItem;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Timeline") TObjectPtr<UTimelineComponent> TimelineComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Post Process") TObjectPtr<UPostProcessComponent> PostProcessComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player States") EPlayerState PlayerStates;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Trace") TObjectPtr<AActor> TracedObject;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Trace") TObjectPtr<AActor> InteractedObject;
@@ -134,6 +136,12 @@ protected:
 	bool bInspection;
 
 #pragma endregion Inspection
+
+#pragma region Doors
+
+	friend class ADoors;
+	
+#pragma endregion Doors
 
 private:
 	

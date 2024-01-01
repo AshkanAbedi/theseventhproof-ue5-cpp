@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/PostProcessComponent.h"
 #include "Components/SpotLightComponent.h"
 #include "Components/TimelineComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -36,6 +37,10 @@ APlayerCharacter::APlayerCharacter()
 
 	MainCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Main Camera"));
 	MainCamera->SetupAttachment(CameraBoom);
+
+	PostProcessComponent = CreateDefaultSubobject<UPostProcessComponent>(TEXT("Post Process Component"));
+	PostProcessComponent->SetupAttachment(MainCamera);
+	PostProcessComponent->bAutoActivate = true;
 
 	InspectableItem = CreateDefaultSubobject<USceneComponent>(TEXT("Inspectable Item"));
 	InspectableItem->SetupAttachment(MainCamera);
@@ -66,33 +71,37 @@ void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void APlayerCharacter::MoveForward(const FInputActionValue& Value)
 {
-	AddMovementInput(FVector(GetActorForwardVector()), Value.GetMagnitude());
+	if (PlayerStates == EPlayerState::EPS_Normal)
+		AddMovementInput(FVector(GetActorForwardVector()), Value.GetMagnitude());
 }
 
 void APlayerCharacter::MoveBackward(const FInputActionValue& Value)
 {
-	AddMovementInput(FVector(GetActorForwardVector()) * -1.f, Value.GetMagnitude());
+	if (PlayerStates == EPlayerState::EPS_Normal)
+		AddMovementInput(FVector(GetActorForwardVector()) * -1.f, Value.GetMagnitude());
 }
 
 void APlayerCharacter::MoveRight(const FInputActionValue& Value)
 {
-	AddMovementInput(FVector(GetActorRightVector()), Value.GetMagnitude());
+	if (PlayerStates == EPlayerState::EPS_Normal)	
+		AddMovementInput(FVector(GetActorRightVector()), Value.GetMagnitude());
 }
 
 void APlayerCharacter::MoveLeft(const FInputActionValue& Value)
 {
-	AddMovementInput(FVector(GetActorRightVector()) * -1.f, Value.GetMagnitude());
+	if (PlayerStates == EPlayerState::EPS_Normal)
+		AddMovementInput(FVector(GetActorRightVector()) * -1.f, Value.GetMagnitude());
 }
 
 void APlayerCharacter::LookAround(const FInputActionValue& Value)
 {
-	if ((Controller) && bInspection != true)
+	if ((Controller) && PlayerStates == EPlayerState::EPS_Normal)
 		AddControllerYawInput(Value.GetMagnitude());
 }
 
 void APlayerCharacter::LookUp(const FInputActionValue& Value)
 {
-	if ((Controller) && bInspection != true)
+	if ((Controller) && PlayerStates == EPlayerState::EPS_Normal)
 		AddControllerPitchInput(Value.GetMagnitude());
 }
 
@@ -100,17 +109,14 @@ void APlayerCharacter::Inspect(const FInputActionValue& Value)
 {
 	if (IsValid(InspectedObject))
 	{
-		bInspection = true;
-		InspectedObject->StaticMeshComponent->AddWorldRotation(FRotator(0, Value.Get<FVector2d>().Y * InspectedObject->InspectRotateSpeed, Value.Get<FVector2d>().X * InspectedObject->InspectRotateSpeed));
-		GEngine->AddOnScreenDebugMessage(10, 5.f, FColor::Green,  InspectedObject->StaticMeshComponent->GetComponentRotation().ToString());
+		InspectedObject->StaticMeshComponent->AddWorldRotation(FRotator(Value.Get<FVector3d>().Z * InspectedObject->InspectRotateSpeed, Value.Get<FVector3d>().Y * InspectedObject->InspectRotateSpeed, Value.Get<FVector3d>().X * InspectedObject->InspectRotateSpeed));
 	}
 }
 
 void APlayerCharacter::Cancel()
 {
-	if (bInspection)
+	if (PlayerStates == EPlayerState::EPS_Inspecting)
 		InspectedObject->ReturnToStart();
-		bInspection = false;
 	OnCancelInputDelegate.Broadcast();
 }
 
@@ -130,7 +136,7 @@ void APlayerCharacter::TraceTimer()
 	{
 		TracedObject = HitResult.GetActor();
 		OnSeeingInteractable.Broadcast(HitResult.GetActor()->GetClass());
-		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("Hit Something: %s"), *TracedObject->GetName()));
+		// GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("Hit Something: %s"), *TracedObject->GetName()));
 	}
 
 	if (bHitFloor)
@@ -139,7 +145,7 @@ void APlayerCharacter::TraceTimer()
 		if (!IsValid(FloorPhysicalMaterial))
 			return;
 		FString PhysicalMaterialName = FloorPhysicalMaterial->GetName();
-		GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Orange, FString::Printf(TEXT("Hit Floor: %s"), *PhysicalMaterialName));
+		// GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Orange, FString::Printf(TEXT("Hit Floor: %s"), *PhysicalMaterialName));
 	}
 		
 }
@@ -148,7 +154,6 @@ void APlayerCharacter::Interact()
 {
 	if (HitResult.GetActor()->GetClass()->ImplementsInterface(UInteractInterface::StaticClass()))
 	{
-		PlayerStates = EPlayerState::EPS_Interacting;
 		OnInteracting.Broadcast(HitResult.GetActor());
 		InteractedObject = HitResult.GetActor();
 		IInteractInterface::Execute_Interact(HitResult.GetActor());
@@ -179,6 +184,7 @@ void APlayerCharacter::AddToInventory(AItems* Item)
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	GEngine->AddOnScreenDebugMessage(4, 5.f, FColor::Green, FString::Printf(TEXT("Player State: %s"), *UEnum::GetValueAsString(PlayerStates)));
 }
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {

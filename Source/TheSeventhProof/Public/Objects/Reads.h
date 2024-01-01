@@ -11,6 +11,7 @@ class UStaticMeshComponent;
 class UAudioComponent;
 class USoundCue;
 class UTexture2D;
+class APlayerCharacter;
 
 UCLASS()
 class THESEVENTHPROOF_API AReads : public ABaseInteractable
@@ -27,7 +28,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") TObjectPtr<USoundCue> ReadSound;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") TObjectPtr<UTexture2D> ReadImage;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") FText Description;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player") TObjectPtr<APlayerCharacter> PlayerCharacter;
+	friend class APlayerCharacter;
 
+	virtual void BeginPlay() override;
 	virtual void Interact_Implementation() override;
 	
 private:

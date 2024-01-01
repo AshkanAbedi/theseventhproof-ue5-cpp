@@ -5,10 +5,11 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/AudioComponent.h"
 #include "Sound/SoundCue.h"
+#include "Character/PlayerCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 AReads::AReads()
 {
-	PrimaryActorTick.bCanEverTick = false;
 	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
 	RootComponent = SceneComponent;
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
@@ -16,12 +17,18 @@ AReads::AReads()
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
 }
 
+void AReads::BeginPlay()
+{
+	Super::BeginPlay();
+	PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+}
+
 void AReads::Interact_Implementation()
 {
-	if (!bIsReading)
+	if (IsValid(PlayerCharacter) && PlayerCharacter->PlayerStates == EPlayerState::EPS_Normal)
 	{
 		AudioComponent->SetSound(ReadSound);
 		AudioComponent->Play();
-		bIsReading = true;
+		PlayerCharacter->PlayerStates = EPlayerState::EPS_Reading;
 	}
 }
