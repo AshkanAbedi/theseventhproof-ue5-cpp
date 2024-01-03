@@ -27,6 +27,7 @@ void AItems::BeginPlay()
 void AItems::Interact_Implementation()
 {
 	if (IsValid(PlayerCharacter) && IsValid(PickUpSound)) {
+		OnItemPickedUp.Broadcast();
 		AudioComponent->SetSound(PickUpSound);
 		AudioComponent->Play();
 		PlayerCharacter->AddToInventory(this);

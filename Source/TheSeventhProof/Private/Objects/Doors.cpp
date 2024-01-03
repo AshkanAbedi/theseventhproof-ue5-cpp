@@ -1,4 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+// ReSharper disable CppMemberFunctionMayBeStatic
 
 #include "Objects/Doors.h"
 #include "Components/SceneComponent.h"
@@ -29,64 +30,86 @@ void ADoors::BeginPlay()
 {
 	Super::BeginPlay();
 	PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	Item = Cast<AItems>(UGameplayStatics::GetActorOfClass(GetWorld(), AItems::StaticClass()));
+	Item->OnItemPickedUp.AddDynamic(this, &ADoors::Unlocking);
 }
 
 void ADoors::Interact_Implementation()
 {
 	if (bIsToggling) return;
-	
-	if (!bIsLocked)
+
+	switch (DoorState)
 	{
-		if (!bIsOpen && IsValid(TogglingCurve)) {
-			FOnTimelineFloat TimelineTickDelegate;
-			FOnTimelineEvent TimelineFinishedDelegate;
-			TimelineTickDelegate.BindUFunction(this, "DoorToggling");
-			TimelineFinishedDelegate.BindUFunction(this, "TimelineFinished");
-			TimelineComponent->AddInterpFloat(TogglingCurve, TimelineTickDelegate);
-			TimelineComponent->SetTimelineLength(ETimelineLengthMode::TL_TimelineLength);
-			TimelineComponent->SetPlayRate(1.f);
-			TimelineComponent->PlayFromStart();
-			AudioComponent->SetSound(OpeningSound);
-			AudioComponent->Play();
-			bIsToggling = true;
-			bIsOpen = true;
-			TimelineComponent->SetTimelineFinishedFunc(TimelineFinishedDelegate);
-		}
-		else
-		{
-			FOnTimelineFloat TimelineTickDelegate;
-			FOnTimelineEvent TimelineFinishedDelegate;
-			TimelineTickDelegate.BindUFunction(this, "DoorToggling");
-			TimelineFinishedDelegate.BindUFunction(this, "TimelineFinished");
-			TimelineComponent->AddInterpFloat(TogglingCurve, TimelineTickDelegate);
-			TimelineComponent->SetTimelineLength(ETimelineLengthMode::TL_TimelineLength);
-			TimelineComponent->SetPlayRate(2.5f);
-			TimelineComponent->ReverseFromEnd();
-			AudioComponent->SetSound(ClosingSound);
-			AudioComponent->Play();
-			bIsToggling = true;
-			bIsOpen = false;
-			TimelineComponent->SetTimelineFinishedFunc(TimelineFinishedDelegate);
-		}
-		
-	} else if (bIsLocked)
-	{
-		for (const auto Element : PlayerCharacter->Inventory)
-		{
-			const EItemNames ItemName = Cast<AItems>(Element)->GetItemName();
-			if (ItemName == RequiredItem)
+		case EDoorStates::EDS_StateNormal:
+			if (!bIsOpen)
 			{
-				bIsLocked = false;
-				AudioComponent->SetSound(UnlockingSound);
+				AudioComponent->SetSound(OpeningSound);
 				AudioComponent->Play();
-				return;
-			}	
-		}
+				OpeningDoor();
+				DoorState = EDoorStates::EDS_StateNormal;
+			}
+			else
+			{
+				AudioComponent->SetSound(ClosingSound);
+				AudioComponent->Play();
+				ClosingDoor();
+				DoorState = EDoorStates::EDS_StateNormal;
+			}
+			break;
 		
-		AudioComponent->SetSound(LockedSound);
-		AudioComponent->Play();
+		case EDoorStates::EDS_StateLocked:
+			AudioComponent->SetSound(LockedSound);
+			AudioComponent->Play();
+			DoorState = EDoorStates::EDS_StateLocked;
+			break;
+
+		case EDoorStates::EDS_StateUnlocking:
+			AudioComponent->SetSound(UnlockingSound);
+			AudioComponent->Play();
+			GetWorld()->GetTimerManager().SetTimer(UnlockTimerHandle, this, &ADoors::OpeningDoor, UnlockingSound->Duration, false);
+			DoorState = EDoorStates::EDS_StateNormal;
+			break;
 	}
-	
+}
+
+void ADoors::OpeningDoor()
+{
+	FOnTimelineFloat TimelineTickDelegate;
+	FOnTimelineEvent TimelineFinishedDelegate;
+	TimelineTickDelegate.BindUFunction(this, "DoorToggling");
+	TimelineFinishedDelegate.BindUFunction(this, "TimelineFinished");
+	TimelineComponent->AddInterpFloat(TogglingCurve, TimelineTickDelegate);
+	TimelineComponent->SetTimelineLength(ETimelineLengthMode::TL_TimelineLength);
+	TimelineComponent->SetPlayRate(1.f);
+	TimelineComponent->PlayFromStart();
+	AudioComponent->SetSound(OpeningSound);
+	AudioComponent->Play();
+	bIsToggling = true;
+	bIsOpen = true;
+	TimelineComponent->SetTimelineFinishedFunc(TimelineFinishedDelegate);
+}
+
+void ADoors::ClosingDoor()
+{
+	FOnTimelineFloat TimelineTickDelegate;
+	FOnTimelineEvent TimelineFinishedDelegate;
+	TimelineTickDelegate.BindUFunction(this, "DoorToggling");
+	TimelineFinishedDelegate.BindUFunction(this, "TimelineFinished");
+	TimelineComponent->AddInterpFloat(TogglingCurve, TimelineTickDelegate);
+	TimelineComponent->SetTimelineLength(ETimelineLengthMode::TL_TimelineLength);
+	TimelineComponent->SetPlayRate(2.5f);
+	TimelineComponent->ReverseFromEnd();
+	AudioComponent->SetSound(ClosingSound);
+	AudioComponent->Play();
+	bIsToggling = true;
+	bIsOpen = false;
+	TimelineComponent->SetTimelineFinishedFunc(TimelineFinishedDelegate);
+}
+
+void ADoors::Unlocking()
+{
+	DoorState = EDoorStates::EDS_StateUnlocking;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("DoorState: %s"), *UEnum::GetValueAsString(DoorState)));
 }
 
 void ADoors::DoorToggling(const float Output) const

@@ -14,6 +14,9 @@ class USoundCue;
 class UTexture2D;
 class APlayerCharacter;
 
+UDELEGATE()
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnItemPickedUp);
+
 UCLASS()
 class THESEVENTHPROOF_API AItems : public ABaseInteractable
 {
@@ -21,16 +24,17 @@ class THESEVENTHPROOF_API AItems : public ABaseInteractable
 
 public:
 	AItems();
+	UPROPERTY(BlueprintAssignable) FOnItemPickedUp OnItemPickedUp;
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components") TObjectPtr<USceneComponent> SceneComponent;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components") TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components") TObjectPtr<APlayerCharacter> PlayerCharacter;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") TObjectPtr<UAudioComponent> AudioComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") TObjectPtr<USoundCue> PickUpSound;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") TObjectPtr<UTexture2D> ItemIcon;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") EItemNames ItemName;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (MultiLine = true)) FText ItemDescription;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player") TObjectPtr<APlayerCharacter> PlayerCharacter;
 	friend class APlayerCharacter;
 
 	virtual void BeginPlay() override;
