@@ -176,6 +176,7 @@ void APlayerCharacter::AddToInventory(AItems* Item)
 	{
 		Inventory.Add(Item);
 		InventoryCount++;
+		OnItemAddedToInventoryDelegate.Broadcast(Item);
 	}
 }
 

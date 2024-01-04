@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 // ReSharper disable CppMemberFunctionMayBeStatic
 
+// ReSharper disable CppParameterMayBeConstPtrOrRef
 #include "Objects/Doors.h"
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -30,8 +31,7 @@ void ADoors::BeginPlay()
 {
 	Super::BeginPlay();
 	PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	Item = Cast<AItems>(UGameplayStatics::GetActorOfClass(GetWorld(), AItems::StaticClass()));
-	Item->OnItemPickedUp.AddDynamic(this, &ADoors::Unlocking);
+	PlayerCharacter->OnItemAddedToInventoryDelegate.AddDynamic(this, &ADoors::Unlocking);
 }
 
 void ADoors::Interact_Implementation()
@@ -106,10 +106,16 @@ void ADoors::ClosingDoor()
 	TimelineComponent->SetTimelineFinishedFunc(TimelineFinishedDelegate);
 }
 
-void ADoors::Unlocking()
+void ADoors::Unlocking(AItems* Item)
 {
+	for (auto Element : CorrespondingItems)
+	{
+		if (!PlayerCharacter->GetInventory().Contains(Element) || DoorState == EDoorStates::EDS_StateUnlocking)
+		{
+			return;
+		}
+	}
 	DoorState = EDoorStates::EDS_StateUnlocking;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("DoorState: %s"), *UEnum::GetValueAsString(DoorState)));
 }
 
 void ADoors::DoorToggling(const float Output) const

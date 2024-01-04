@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "States/ItemNames.h"
 #include "GameplayManager.generated.h"
 
 class USceneComponent;
@@ -24,10 +25,13 @@ public:
 	AGameplayManager();
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components") TObjectPtr<USceneComponent> SceneComponent;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components") TObjectPtr<APlayerCharacter> PlayerCharacter;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components") TArray<AItems*> InventoryManager;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components") TArray<AActor*> ItemActors;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components") TArray<AActor*> DoorsActors;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components") TArray<AItems*> Items;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components") TArray<ADoors*> Doors;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components") TArray<EItemNames> ItemNames;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components") TArray<EItemNames> RequiredItems;
 
 protected:
 	virtual void BeginPlay() override;

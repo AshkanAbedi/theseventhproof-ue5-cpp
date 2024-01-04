@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Gameplay/GameplayManager.h"
 #include "Components/SceneComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -19,18 +18,42 @@ void AGameplayManager::BeginPlay()
 {
 	Super::BeginPlay();
 	PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AItems::StaticClass(), ItemActors);
-	for (const auto ItemActor : ItemActors)
-	{
-		Items.Add(Cast<AItems>(ItemActor));
-	}
-	
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADoors::StaticClass(), DoorsActors);
-	
+// 	PlayerCharacter->OnItemAddedToInventoryDelegate.AddDynamic(this, &AGameplayManager::Unlocking);
+// 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AItems::StaticClass(), ItemActors);
+// 	for (const auto ItemActor : ItemActors)
+// 	{
+// 		Items.Add(Cast<AItems>(ItemActor));
+// 	}
+// 	// for (const auto Item : Items)
+// 	// {
+// 	// 	Item->OnItemPickedUp.AddDynamic(this, &AGameplayManager::Unlocking);
+// 	// }
+//
+// 	
+// 	
+// 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADoors::StaticClass(), DoorsActors);
+// 	for (const auto DoorActor : DoorsActors)
+// 	{
+// 		Doors.Add(Cast<ADoors>(DoorActor));
+// 	}
+// }
+
+// void AGameplayManager::Unlocking()
+// {
+// 	for (const auto Door : Doors)
+// 	{
+// 		if (PlayerCharacter->GetInventory().Contains(Door->GetCorrespondingItems()))
+// 		{
+// 			Door->DoorState = EDoorStates::EDS_StateUnlocking;
+// 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unlocking"));
+// 		}
+// 	}
 }
 
 void AGameplayManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
+
 

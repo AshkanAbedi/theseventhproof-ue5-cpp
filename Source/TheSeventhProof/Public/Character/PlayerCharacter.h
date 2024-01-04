@@ -33,6 +33,7 @@ class AReads;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSeeingInteractableSignature, UClass*, InteractableType);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteractingSignature, AActor*, InteractedObject);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCancelInput);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemAddedToInventory, AItems*, Item);
 
 UCLASS()
 class THESEVENTHPROOF_API APlayerCharacter : public ACharacter
@@ -44,11 +45,21 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
+#pragma region Getters&Setters
+
+	[[nodiscard]] TArray<AItems*> GetInventory() const
+	{
+		return Inventory;
+	}
+	
+#pragma endregion Getters&Setters
+
 #pragma region Delegates
 	
 	UPROPERTY(BlueprintAssignable) FOnSeeingInteractableSignature OnSeeingInteractable;
 	UPROPERTY(BlueprintAssignable) FOnInteractingSignature OnInteracting;
 	UPROPERTY(BlueprintAssignable) FOnCancelInput OnCancelInputDelegate;
+	UPROPERTY(BlueprintAssignable) FOnItemAddedToInventory OnItemAddedToInventoryDelegate;
 	
 #pragma endregion Delegates
 
