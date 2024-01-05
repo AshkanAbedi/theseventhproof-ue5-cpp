@@ -14,7 +14,6 @@ class USoundCue;
 class UTexture2D;
 class APlayerCharacter;
 
-
 UCLASS()
 class THESEVENTHPROOF_API AItems : public ABaseInteractable
 {

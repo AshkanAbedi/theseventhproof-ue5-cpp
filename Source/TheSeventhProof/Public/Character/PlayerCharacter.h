@@ -33,8 +33,8 @@ class AReads;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSeeingInteractableSignature, UClass*, InteractableType);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteractingSignature, AActor*, InteractedObject);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCancelInput);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemAddedToInventory, AItems*, Item);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCancelInput);
 
 UCLASS()
 class THESEVENTHPROOF_API APlayerCharacter : public ACharacter
@@ -108,10 +108,12 @@ protected:
 	void LookAround(const FInputActionValue& Value);
 	void LookUp(const FInputActionValue& Value);
 	void Inspect (const FInputActionValue& Value);
-	void TraceTimer();
 	void FlashLightToggle(const FInputActionInstance& Value);
+	void TraceTimer();
 	void Interact();
 	void Cancel();
+	UFUNCTION(BlueprintCallable) void OnCineCameraInitiate();
+	UFUNCTION(BlueprintCallable) void OnCineCameraEnd();
 
 #pragma endregion Functions
 

@@ -64,8 +64,7 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 	PlayerStates = EPlayerState::EPS_Normal;
 	GetWorld()->GetTimerManager().SetTimer(TraceTimerHandle, this, &APlayerCharacter::TraceTimer, TraceTimerCount, true);
-	CineCamera->Activate();
-	MainCamera->Deactivate();
+	MainCamera->Activate();
 }
 void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
@@ -184,6 +183,18 @@ void APlayerCharacter::AddToInventory(AItems* Item)
 		InventoryCount++;
 		OnItemAddedToInventoryDelegate.Broadcast(Item);
 	}
+}
+
+void APlayerCharacter::OnCineCameraInitiate()
+{
+	CineCamera->Activate();
+	MainCamera->Deactivate();
+}
+
+void APlayerCharacter::OnCineCameraEnd()
+{
+	CineCamera->Deactivate();
+	MainCamera->Activate();
 }
 
 #pragma endregion Core Functions
