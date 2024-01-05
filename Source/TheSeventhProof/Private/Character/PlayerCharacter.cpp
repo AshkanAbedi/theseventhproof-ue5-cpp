@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "CineCameraComponent.h"
 #include "Components/PostProcessComponent.h"
 #include "Components/SpotLightComponent.h"
 #include "Components/TimelineComponent.h"
@@ -38,6 +39,9 @@ APlayerCharacter::APlayerCharacter()
 	MainCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Main Camera"));
 	MainCamera->SetupAttachment(CameraBoom);
 
+	CineCamera = CreateDefaultSubobject<UCineCameraComponent>(TEXT("Cine Camera"));
+	CineCamera->SetupAttachment(CameraBoom);
+
 	PostProcessComponent = CreateDefaultSubobject<UPostProcessComponent>(TEXT("Post Process Component"));
 	PostProcessComponent->SetupAttachment(MainCamera);
 	PostProcessComponent->bAutoActivate = true;
@@ -60,6 +64,8 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 	PlayerStates = EPlayerState::EPS_Normal;
 	GetWorld()->GetTimerManager().SetTimer(TraceTimerHandle, this, &APlayerCharacter::TraceTimer, TraceTimerCount, true);
+	CineCamera->Activate();
+	MainCamera->Deactivate();
 }
 void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {

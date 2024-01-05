@@ -19,6 +19,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class UCineCameraComponent;
 class USpotLightComponent;
 class UTimelineComponent;
 class UPhysicalMaterial;
@@ -67,6 +68,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera") TObjectPtr<USpringArmComponent> CameraBoom;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera") TObjectPtr<UCameraComponent> MainCamera;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera") TObjectPtr<UCineCameraComponent> CineCamera;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Flash Light") TObjectPtr<USpotLightComponent> FlashLight;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InspectableItem") TObjectPtr<USceneComponent> InspectableItem;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Timeline") TObjectPtr<UTimelineComponent> TimelineComponent;

@@ -31,7 +31,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") TObjectPtr<USoundCue> PickUpSound;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") TObjectPtr<UTexture2D> ItemIcon;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") EItemNames ItemName;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") TArray<AActor*> CorrespondingObjects;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (MultiLine = true)) FText ItemDescription;
 	friend class APlayerCharacter;
 
@@ -46,10 +45,6 @@ public:
 	[[nodiscard]] UFUNCTION(BlueprintCallable) EItemNames GetItemName() const
 	{
 		return ItemName;
-	}
-	[[nodiscard]] TArray<AActor*> GetCorrespondingObjects() const
-	{
-		return CorrespondingObjects;
 	}
 #pragma endregion Getters&Setters
 	
