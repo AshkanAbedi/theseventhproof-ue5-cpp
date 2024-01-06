@@ -1,12 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 // ReSharper disable CppMemberFunctionMayBeStatic
-
 // ReSharper disable CppParameterMayBeConstPtrOrRef
+
 #include "Objects/Doors.h"
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/TimelineComponent.h"
-#include "Curves/CurveFloat.h"
 #include "Components/AudioComponent.h"
 #include "Sound/SoundCue.h"
 #include "Character/PlayerCharacter.h"
