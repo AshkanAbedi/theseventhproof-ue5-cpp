@@ -123,6 +123,7 @@ void APlayerCharacter::Cancel()
 	if (PlayerStates == EPlayerState::EPS_Inspecting)
 		InspectedObject->ReturnToStart();
 	OnCancelInputDelegate.Broadcast();
+	PlayerStates = EPlayerState::EPS_Normal;
 }
 
 #pragma endregion Movement

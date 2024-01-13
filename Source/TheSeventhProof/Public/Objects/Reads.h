@@ -20,6 +20,17 @@ class THESEVENTHPROOF_API AReads : public ABaseInteractable
 public:
 	AReads();
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components") bool bIsReading;
+#pragma region Getters&Setters
+	[[nodiscard]] TObjectPtr<UTexture2D> GetReadImage() const
+	{
+		return ReadImage;
+	}
+
+	[[nodiscard]] FText GetImageText() const
+	{
+		return Description;
+	}
+#pragma endregion Getters&Setters
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components") TObjectPtr<USceneComponent> SceneComponent;
@@ -35,6 +46,5 @@ protected:
 	virtual void Interact_Implementation() override;
 	
 private:
-	
 	
 };

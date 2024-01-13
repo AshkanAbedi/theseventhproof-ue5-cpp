@@ -2,6 +2,7 @@
 // ReSharper disable IdentifierTypo
 // ReSharper disable CppMemberFunctionMayBeConst
 // ReSharper disable CppParameterMayBeConstPtrOrRef
+// ReSharper disable CppDefaultCaseNotHandledInSwitchStatement
 
 #include "Character/PlayerCharacter.h"
 #include "GameFramework/PlayerController.h"
@@ -10,8 +11,12 @@
 #include "UI/BaseHUD.h"
 #include "UI/BaseInventory.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/BackgroundBlur.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "Objects/Doors.h"
+#include "Objects/Observables.h"
+#include "Objects/Reads.h"
 
 
 ABaseUI::ABaseUI()
@@ -21,6 +26,7 @@ ABaseUI::ABaseUI()
 	BaseInventoryClass = nullptr;
 	TracedObjectClass = nullptr;
 	InteractedObjectClass = nullptr;
+	Observable = nullptr;
 }
 
 void ABaseUI::BeginPlay()
@@ -29,6 +35,7 @@ void ABaseUI::BeginPlay()
 	PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	PlayerCharacter->OnSeeingInteractable.AddDynamic(this, &ABaseUI::OnSeeingInteractable);
 	PlayerCharacter->OnInteracting.AddDynamic(this, &ABaseUI::OnInteracting);
+	PlayerCharacter->OnCancelInputDelegate.AddDynamic(this, &ABaseUI::OnCancelInput);
 	
 	PlayerController = this->GetOwningPlayerController();
 	PlayerController->SetInputMode(FInputModeGameOnly());
@@ -57,33 +64,27 @@ void ABaseUI::OnSeeingInteractable(UClass* InteractableType)
 		switch (InteractableObjects.Find(TracedObjectClass))
 		{
 		case 0:
-			BaseHUD->CrosshairIcons->SetBrushFromTexture(InteractableObjectIcons[0]);
-			BaseHUD->CrosshairIcons->SetDesiredSizeOverride(FVector2d(40, 40));
+			SetCrosshairIcon(0, FVector2d(40, 40));
 			break;
 			
 		case 1:
-			BaseHUD->CrosshairIcons->SetBrushFromTexture(InteractableObjectIcons[1]);
-			BaseHUD->CrosshairIcons->SetDesiredSizeOverride(FVector2d(40, 40));
+			SetCrosshairIcon(1, FVector2d(40, 40));
 			break;
 
 		case 2:
-			BaseHUD->CrosshairIcons->SetBrushFromTexture(InteractableObjectIcons[2]);
-			BaseHUD->CrosshairIcons->SetDesiredSizeOverride(FVector2d(40, 40));
+			SetCrosshairIcon(2, FVector2d(40, 40));
 			break;
 			
 		case 3:
-			BaseHUD->CrosshairIcons->SetBrushFromTexture(InteractableObjectIcons[3]);
-			BaseHUD->CrosshairIcons->SetDesiredSizeOverride(FVector2d(40, 40));
+			SetCrosshairIcon(3, FVector2d(40, 40));
 			break;
 			
 		case 4:
-			BaseHUD->CrosshairIcons->SetBrushFromTexture(InteractableObjectIcons[4]);
-			BaseHUD->CrosshairIcons->SetDesiredSizeOverride(FVector2d(40, 40));
+			SetCrosshairIcon(4, FVector2d(40, 40));
 			break;
 			
 		case 5:
-			BaseHUD->CrosshairIcons->SetBrushFromTexture(InteractableObjectIcons[5]);
-			BaseHUD->CrosshairIcons->SetDesiredSizeOverride(FVector2d(40, 40));
+			SetCrosshairIcon(5, FVector2d(40, 40));
 			break;
 			
 		default:
@@ -102,15 +103,99 @@ void ABaseUI::OnInteracting(AActor* InteractedObject)
 	if (PlayerCharacter->PlayerStates == EPlayerState::EPS_Normal)
 	{
 		InteractedObjectClass = InteractedObject->GetClass();
-
+	
 		switch (InteractableObjects.Find(InteractedObjectClass))
 		{
 		case 0:
-			GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, TEXT("THIS IS AN OBSERVABLE"));
+			Observable = Cast<AObservables>(InteractedObject);
+			if (IsValid(Observable))
+				SetPromptText(Observable->GetStoryText(), Observable->GetStoryDelay());
+			break;
+			
+		case 1:
+			Door = Cast<ADoors>(InteractedObject);
+			if (IsValid(Door))
+				switch (Door->DoorState)
+				{
+					case EDoorStates::EDS_StateLocked:
+						SetPromptText(Door->GetLockMessage(), Door->GetMessageDuration());
+					break;
+
+					case EDoorStates::EDS_StateUnlocking:
+						ClearPromptText();
+					break;
+
+					case EDoorStates::EDS_StateNormal:
+						ClearPromptText();
+					break;
+				}
+			break;
+	
+		case 2:
+			GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("Item")));
+			break;
+			
+		case 3:
+			GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("Readable")));
+			break;
+			
+		case 4:
+			GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("Inspectable")));
+			
+			break;
+			
+		case 5:
+			GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("Reads")));
+			Read = Cast<AReads>(InteractedObject);
+			if (IsValid(Read))
+				SetReadingImage(Read->GetReadImage());
 			break;
 			
 		default:
 			break;
 		}
 	}
+}
+
+void ABaseUI::SetCrosshairIcon(const int Index, const FVector2d Size)
+{
+	BaseHUD->CrosshairIcons->SetBrushFromTexture(InteractableObjectIcons[Index]);
+	BaseHUD->CrosshairIcons->SetDesiredSizeOverride(Size);
+}
+
+void ABaseUI::ClearCrosshairIcon()
+{
+	BaseHUD->CrosshairIcons->SetBrushFromTexture(nullptr);
+}
+
+void ABaseUI::SetPromptText(const FText& Text, const float Duration)
+{
+	BaseHUD->PromptText->SetText(Text);
+	GetWorld()->GetTimerManager().SetTimer(TextTimerHandle, this, &ABaseUI::ClearPromptText, Duration, false);
+}
+
+void ABaseUI::ClearPromptText()
+{
+	BaseHUD->PromptText->SetText(FText::FromString(""));
+	GetWorld()->GetTimerManager().ClearTimer(TextTimerHandle);
+}
+
+void ABaseUI::SetReadingImage(UTexture2D* Image)
+{
+	BaseHUD->ReadingImage->SetBrushFromTexture(Image, false);
+	BaseHUD->ReadingImage->Brush.DrawAs = ESlateBrushDrawType::Image;
+	BaseHUD->ReadingImage->Brush.TintColor = FLinearColor(1.f, 1.f, 1.f, 1.f);
+	BaseHUD->BackgroundBlur->SetBlurStrength(5.f);
+}
+
+void ABaseUI::ClearReadingImage()
+{
+	BaseHUD->ReadingImage->SetBrushFromTexture(nullptr);
+	BaseHUD->ReadingImage->Brush.DrawAs = ESlateBrushDrawType::NoDrawType;
+	BaseHUD->BackgroundBlur->SetBlurStrength(0.f);
+}
+
+void ABaseUI::OnCancelInput()
+{
+	ClearReadingImage();
 }

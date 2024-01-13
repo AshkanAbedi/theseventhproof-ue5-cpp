@@ -11,6 +11,12 @@ class APlayerCharacter;
 class APlayerController;
 class UBaseHUD;
 class UBaseInventory;
+class AObservables;
+class ADoors;
+class ALights;
+class AItems;
+class AInspectables;
+class AReads;
 class UTexture2D;
 
 UCLASS()
@@ -31,13 +37,28 @@ public:
 	UPROPERTY(EditAnywhere) TSubclassOf<UBaseInventory> BaseInventoryClass;
 	UPROPERTY() TObjectPtr<UBaseHUD> BaseHUD;
 	UPROPERTY() TObjectPtr<UBaseInventory> BaseInventory;
+	UPROPERTY() TObjectPtr<AObservables> Observable;
+	UPROPERTY() TObjectPtr<ADoors> Door;
+	UPROPERTY() TObjectPtr<ALights> Light;
+	UPROPERTY() TObjectPtr<AItems> Item;
+	UPROPERTY() TObjectPtr<AInspectables> Inspectable;
+	UPROPERTY() TObjectPtr<AReads> Read;
+
 	
 
 protected:
 	UFUNCTION() void OnSeeingInteractable(UClass* InteractableType);
 	UFUNCTION() void OnInteracting(AActor* InteractedObject);
+	UFUNCTION() void OnCancelInput();
+	void SetCrosshairIcon(const int Index, const FVector2d Size);
+	void ClearCrosshairIcon();
+	void SetPromptText(const FText& Text, const float Duration);
+	void ClearPromptText();
+	void SetReadingImage(UTexture2D* Image);
+	void ClearReadingImage();
 
 private:
 	UClass* TracedObjectClass;
 	UClass* InteractedObjectClass;
+	FTimerHandle TextTimerHandle;
 };

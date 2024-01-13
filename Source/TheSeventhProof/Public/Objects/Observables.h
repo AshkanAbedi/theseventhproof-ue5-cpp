@@ -15,6 +15,17 @@ class THESEVENTHPROOF_API AObservables : public ABaseInteractable
 	GENERATED_BODY()
 public:
 	AObservables();
+#pragma region Getters&Setters
+	[[nodiscard]] FText GetStoryText() const
+	{
+		return StoryText;
+	}
+
+	[[nodiscard]] float GetStoryDelay() const
+	{
+		return StoryDelay;
+	}
+#pragma endregion Getters&Setters
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components") TObjectPtr<USceneComponent> SceneComponent;

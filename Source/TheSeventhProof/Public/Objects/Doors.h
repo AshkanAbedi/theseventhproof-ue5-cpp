@@ -66,6 +66,21 @@ public:
 	{
 		return CorrespondingItems;
 	}
+
+	[[nodiscard]] EDoorStates GetDoorState() const
+	{
+		return DoorState;
+	}
+
+	[[nodiscard]] FText GetLockMessage() const
+	{
+		return LockMessage;
+	}
+
+	[[nodiscard]] float GetMessageDuration() const
+	{
+		return MessageDuration;
+	}
 	
 #pragma endregion Getters&Setters
 	
