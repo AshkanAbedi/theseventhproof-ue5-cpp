@@ -6,6 +6,7 @@
 #include "Objects/BaseInteractable.h"
 #include "States/DoorTypes.h"
 #include "States/DoorStates.h"
+#include "States/ActorTags.h"
 #include "Doors.generated.h"
 
 class USceneComponent;
@@ -15,7 +16,6 @@ class UCurveFloat;
 class UAudioComponent;
 class USoundCue;
 class APlayerCharacter;
-class AGameplayManager;
 class AItems;
 
 UCLASS()
@@ -40,6 +40,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") TObjectPtr<USoundCue> UnlockingSound;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") TObjectPtr<UCurveFloat> TogglingCurve;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") EDoorTypes DoorType;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") EActorTags ActorTag;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") TArray<AItems*> CorrespondingItems;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (MultiLine = true)) FText LockMessage;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components") float MessageDuration;

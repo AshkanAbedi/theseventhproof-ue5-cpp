@@ -4,21 +4,30 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Interfaces/HUDInterface.h"
 #include "BaseHUD.generated.h"
 
+class UOverlay;
 class UImage;
 class UTextBlock;
+class UVerticalBox;
+class UBorder;
+class UBackgroundBlur;
 
 UCLASS()
-class THESEVENTHPROOF_API UBaseHUD : public UUserWidget, public IHUDInterface
+class THESEVENTHPROOF_API UBaseHUD : public UUserWidget
 {
 	GENERATED_BODY()
 
 public:
 	virtual void NativeConstruct() override;
-	virtual void HUDInterface_Implementation() override;
-	
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget)) TObjectPtr<UOverlay> Overlay;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget)) TObjectPtr<UImage> CrosshairIcons;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget)) TObjectPtr<UTextBlock> PromptText;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget)) TObjectPtr<UVerticalBox> QuestList;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget)) TObjectPtr<UTextBlock> Task01;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget)) TObjectPtr<UTextBlock> Task02;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget)) TObjectPtr<UBorder> Border;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget)) TObjectPtr<UBackgroundBlur> BackgroundBlur;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget)) TObjectPtr<UImage> ReadingImage;
 };
