@@ -22,7 +22,7 @@ class THESEVENTHPROOF_API AInspectables : public ABaseInteractable
 
 public:
 	AInspectables();
-	bool bIsInspecting;
+	// bool bIsInspecting;
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components") TObjectPtr<USceneComponent> SceneComponent;

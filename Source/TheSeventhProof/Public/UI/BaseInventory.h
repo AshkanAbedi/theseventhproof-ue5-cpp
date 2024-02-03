@@ -12,7 +12,5 @@ class THESEVENTHPROOF_API UBaseInventory : public UUserWidget
 	GENERATED_BODY()
 public:
 	virtual void NativeConstruct() override;
-protected:
-private:
 	
 };

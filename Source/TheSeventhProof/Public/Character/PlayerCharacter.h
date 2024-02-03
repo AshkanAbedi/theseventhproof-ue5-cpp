@@ -33,8 +33,9 @@ class AReads;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSeeingInteractableSignature, UClass*, InteractableType);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteractingSignature, AActor*, InteractedObject);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemAddedToInventory, AItems*, Item);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnItemAddedToInventory);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCancelInput);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryInput);
 
 UCLASS()
 class THESEVENTHPROOF_API APlayerCharacter : public ACharacter
@@ -61,6 +62,7 @@ public:
 	UPROPERTY(BlueprintAssignable) FOnInteractingSignature OnInteracting;
 	UPROPERTY(BlueprintAssignable) FOnCancelInput OnCancelInputDelegate;
 	UPROPERTY(BlueprintAssignable) FOnItemAddedToInventory OnItemAddedToInventoryDelegate;
+	UPROPERTY(BlueprintAssignable) FOnInventoryInput OnInventoryInputDelegate;
 	
 #pragma endregion Delegates
 
@@ -93,6 +95,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "EnhancedInput") TObjectPtr<UInputAction> InputLookAround;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "EnhancedInput") TObjectPtr<UInputAction> InputLookUp;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "EnhancedInput") TObjectPtr<UInputAction> InputFlashLight;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "EnhancedInput") TObjectPtr<UInputAction> InputInventory;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "EnhancedInput") TObjectPtr<UInputAction> InputInteract;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "EnhancedInput") TObjectPtr<UInputAction> InputRotateItem;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "EnhancedInput") TObjectPtr<UInputAction> InputCancel;
@@ -109,6 +112,7 @@ protected:
 	void LookUp(const FInputActionValue& Value);
 	void Inspect (const FInputActionValue& Value);
 	void FlashLightToggle(const FInputActionInstance& Value);
+	void InventoryToggle(const FInputActionInstance& Value);
 	void TraceTimer();
 	void Interact();
 	void Cancel();
@@ -151,12 +155,6 @@ protected:
 	bool bInspection;
 
 #pragma endregion Inspection
-
-#pragma region Doors
-
-	friend class ADoors;
-	
-#pragma endregion Doors
 
 private:
 	

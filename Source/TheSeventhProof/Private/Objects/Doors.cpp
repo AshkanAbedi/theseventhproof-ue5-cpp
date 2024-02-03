@@ -66,6 +66,7 @@ void ADoors::Interact_Implementation()
 			AudioComponent->SetSound(UnlockingSound);
 			AudioComponent->Play();
 			GetWorld()->GetTimerManager().SetTimer(UnlockTimerHandle, this, &ADoors::OpeningDoor, UnlockingSound->Duration, false);
+			// TODO: Clear the timer handle
 			DoorState = EDoorStates::EDS_StateNormal;
 			break;
 	}
@@ -105,7 +106,7 @@ void ADoors::ClosingDoor()
 	TimelineComponent->SetTimelineFinishedFunc(TimelineFinishedDelegate);
 }
 
-void ADoors::Unlocking(AItems* Item)
+void ADoors::Unlocking()
 {
 	for (auto Element : CorrespondingItems)
 	{

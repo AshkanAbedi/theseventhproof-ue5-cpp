@@ -18,7 +18,6 @@
 #include "Objects/Observables.h"
 #include "Objects/Reads.h"
 
-
 ABaseUI::ABaseUI()
 {
 	BaseHUDClass = nullptr;
@@ -36,6 +35,7 @@ void ABaseUI::BeginPlay()
 	PlayerCharacter->OnSeeingInteractable.AddDynamic(this, &ABaseUI::OnSeeingInteractable);
 	PlayerCharacter->OnInteracting.AddDynamic(this, &ABaseUI::OnInteracting);
 	PlayerCharacter->OnCancelInputDelegate.AddDynamic(this, &ABaseUI::OnCancelInput);
+	PlayerCharacter->OnInventoryInputDelegate.AddDynamic(this, &ABaseUI::OnInventoryInput);
 	
 	PlayerController = this->GetOwningPlayerController();
 	PlayerController->SetInputMode(FInputModeGameOnly());
@@ -46,7 +46,7 @@ void ABaseUI::BeginPlay()
 		BaseHUD = CreateWidget<UBaseHUD>(PlayerController, BaseHUDClass);
 		BaseInventory = CreateWidget<UBaseInventory>(PlayerController, BaseInventoryClass);
 		BaseHUD->AddToViewport();
-		BaseHUD->CrosshairIcons->SetDesiredSizeOverride(FVector2d(5, 5));
+		ClearCrosshairIcon();
 	}
 }
 
@@ -93,8 +93,7 @@ void ABaseUI::OnSeeingInteractable(UClass* InteractableType)
 	}
 	else
 	{
-		BaseHUD->CrosshairIcons->SetBrushFromTexture(nullptr);
-		BaseHUD->CrosshairIcons->SetDesiredSizeOverride(FVector2d(5, 5));
+		ClearCrosshairIcon();
 	}
 }
 
@@ -136,16 +135,16 @@ void ABaseUI::OnInteracting(AActor* InteractedObject)
 			break;
 			
 		case 3:
-			GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("Readable")));
+			GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("Light")));
 			break;
 			
 		case 4:
 			GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("Inspectable")));
-			
+			ClearCrosshairIcon();
 			break;
 			
 		case 5:
-			GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("Reads")));
+			GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("Read")));
 			Read = Cast<AReads>(InteractedObject);
 			if (IsValid(Read))
 				SetReadingImage(Read->GetReadImage());
@@ -159,13 +158,14 @@ void ABaseUI::OnInteracting(AActor* InteractedObject)
 
 void ABaseUI::SetCrosshairIcon(const int Index, const FVector2d Size)
 {
+	BaseHUD->CrosshairIcons->SetVisibility(ESlateVisibility::Visible);
 	BaseHUD->CrosshairIcons->SetBrushFromTexture(InteractableObjectIcons[Index]);
 	BaseHUD->CrosshairIcons->SetDesiredSizeOverride(Size);
 }
 
 void ABaseUI::ClearCrosshairIcon()
 {
-	BaseHUD->CrosshairIcons->SetBrushFromTexture(nullptr);
+	BaseHUD->CrosshairIcons->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void ABaseUI::SetPromptText(const FText& Text, const float Duration)
@@ -198,4 +198,25 @@ void ABaseUI::ClearReadingImage()
 void ABaseUI::OnCancelInput()
 {
 	ClearReadingImage();
+	BaseHUD->CrosshairIcons->SetVisibility(ESlateVisibility::Visible);
+}
+
+void ABaseUI::OnInventoryInput()
+{
+	GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("Inventory Input")));
+	
+	if (!bInventoryPanel)
+	{
+		BaseInventory->AddToViewport();
+		BaseHUD->RemoveFromParent();
+		PlayerController->SetInputMode(FInputModeGameAndUI());
+		bInventoryPanel = true;
+	}
+	else
+	{
+		BaseInventory->RemoveFromParent();
+		BaseHUD->AddToViewport();
+		PlayerController->SetInputMode(FInputModeGameOnly());
+		bInventoryPanel = false;
+	}
 }

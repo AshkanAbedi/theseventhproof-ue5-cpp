@@ -110,6 +110,10 @@ void APlayerCharacter::LookUp(const FInputActionValue& Value)
 		AddControllerPitchInput(Value.GetMagnitude());
 }
 
+#pragma endregion Movement
+
+#pragma region Inspect
+
 void APlayerCharacter::Inspect(const FInputActionValue& Value)
 {
 	if (IsValid(InspectedObject))
@@ -126,7 +130,8 @@ void APlayerCharacter::Cancel()
 	PlayerStates = EPlayerState::EPS_Normal;
 }
 
-#pragma endregion Movement
+#pragma endregion Inspect
+
 #pragma region Trace & Interact
 
 void APlayerCharacter::TraceTimer()
@@ -141,7 +146,7 @@ void APlayerCharacter::TraceTimer()
 	if (bHitSomething)
 	{
 		TracedObject = HitResult.GetActor();
-		OnSeeingInteractable.Broadcast(HitResult.GetActor()->GetClass());
+		OnSeeingInteractable.Broadcast(TracedObject->GetClass());
 		// GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("Hit Something: %s"), *TracedObject->GetName()));
 	}
 
@@ -151,27 +156,32 @@ void APlayerCharacter::TraceTimer()
 		if (!IsValid(FloorPhysicalMaterial))
 			return;
 		FString PhysicalMaterialName = FloorPhysicalMaterial->GetName();
-		// GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Orange, FString::Printf(TEXT("Hit Floor: %s"), *PhysicalMaterialName));
 	}
 		
 }
 
 void APlayerCharacter::Interact()
 {
-	if (HitResult.GetActor()->GetClass()->ImplementsInterface(UInteractInterface::StaticClass()))
+	if (TracedObject->GetClass()->ImplementsInterface(UInteractInterface::StaticClass()))
 	{
-		OnInteracting.Broadcast(HitResult.GetActor());
 		InteractedObject = HitResult.GetActor();
+		OnInteracting.Broadcast(InteractedObject);
 		IInteractInterface::Execute_Interact(HitResult.GetActor());
 	}
 }
 
 #pragma endregion Trace & Interact
+
 #pragma region Core Functions
 
 void APlayerCharacter::FlashLightToggle(const FInputActionInstance& Value)
 {
 	FlashLight->ToggleVisibility();
+}
+
+void APlayerCharacter::InventoryToggle(const FInputActionInstance& Value)
+{
+	OnInventoryInputDelegate.Broadcast();
 }
 
 void APlayerCharacter::AddToInventory(AItems* Item)
@@ -182,7 +192,7 @@ void APlayerCharacter::AddToInventory(AItems* Item)
 	{
 		Inventory.Add(Item);
 		InventoryCount++;
-		OnItemAddedToInventoryDelegate.Broadcast(Item);
+		OnItemAddedToInventoryDelegate.Broadcast();
 	}
 }
 
@@ -217,6 +227,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	EnhancedInputComponent->BindAction(InputLookAround, ETriggerEvent::Triggered, this, &APlayerCharacter::LookAround);
 	EnhancedInputComponent->BindAction(InputLookUp, ETriggerEvent::Triggered, this, &APlayerCharacter::LookUp);
 	EnhancedInputComponent->BindAction(InputFlashLight, ETriggerEvent::Triggered, this, &APlayerCharacter::FlashLightToggle);
+	EnhancedInputComponent->BindAction(InputInventory, ETriggerEvent::Triggered, this, &APlayerCharacter::InventoryToggle);
 	EnhancedInputComponent->BindAction(InputInteract, ETriggerEvent::Started, this, &APlayerCharacter::Interact);
 	EnhancedInputComponent->BindAction(InputRotateItem, ETriggerEvent::Triggered, this, &APlayerCharacter::Inspect);
 	EnhancedInputComponent->BindAction(InputCancel, ETriggerEvent::Triggered, this, &APlayerCharacter::Cancel);

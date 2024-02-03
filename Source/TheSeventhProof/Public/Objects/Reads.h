@@ -19,7 +19,8 @@ class THESEVENTHPROOF_API AReads : public ABaseInteractable
 	GENERATED_BODY()
 public:
 	AReads();
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components") bool bIsReading;
+	// UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components") bool bIsReading;
+	
 #pragma region Getters&Setters
 	[[nodiscard]] TObjectPtr<UTexture2D> GetReadImage() const
 	{

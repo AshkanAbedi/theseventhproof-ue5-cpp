@@ -6,7 +6,6 @@
 #include "Objects/BaseInteractable.h"
 #include "States/DoorTypes.h"
 #include "States/DoorStates.h"
-#include "States/ActorTags.h"
 #include "Doors.generated.h"
 
 class USceneComponent;
@@ -40,7 +39,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") TObjectPtr<USoundCue> UnlockingSound;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") TObjectPtr<UCurveFloat> TogglingCurve;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") EDoorTypes DoorType;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") EActorTags ActorTag;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components") TArray<AItems*> CorrespondingItems;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (MultiLine = true)) FText LockMessage;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components") float MessageDuration;
@@ -50,7 +48,7 @@ protected:
 	virtual void BeginPlay() override;
 	void OpeningDoor();
 	void ClosingDoor();
-	UFUNCTION() void Unlocking(AItems* Item);
+	UFUNCTION() void Unlocking();
 	UFUNCTION() void DoorToggling(const float Output) const;
 	UFUNCTION() void TimelineFinished();
 	FTimerHandle UnlockTimerHandle;

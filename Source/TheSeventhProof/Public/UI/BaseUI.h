@@ -44,12 +44,11 @@ public:
 	UPROPERTY() TObjectPtr<AInspectables> Inspectable;
 	UPROPERTY() TObjectPtr<AReads> Read;
 
-	
-
 protected:
 	UFUNCTION() void OnSeeingInteractable(UClass* InteractableType);
 	UFUNCTION() void OnInteracting(AActor* InteractedObject);
 	UFUNCTION() void OnCancelInput();
+	UFUNCTION() void OnInventoryInput();
 	void SetCrosshairIcon(const int Index, const FVector2d Size);
 	void ClearCrosshairIcon();
 	void SetPromptText(const FText& Text, const float Duration);
@@ -58,6 +57,7 @@ protected:
 	void ClearReadingImage();
 
 private:
+	bool bInventoryPanel = false;
 	UClass* TracedObjectClass;
 	UClass* InteractedObjectClass;
 	FTimerHandle TextTimerHandle;
