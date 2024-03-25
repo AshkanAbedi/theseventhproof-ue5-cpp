@@ -12,6 +12,9 @@ class UTextBlock;
 class UVerticalBox;
 class UBorder;
 class UBackgroundBlur;
+class USizeBox;
+class UProgressBar;
+class UVMTime;
 
 UCLASS()
 class THESEVENTHPROOF_API UBaseHUD : public UUserWidget
@@ -30,4 +33,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget)) TObjectPtr<UBorder> Border;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget)) TObjectPtr<UBackgroundBlur> BackgroundBlur;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget)) TObjectPtr<UImage> ReadingImage;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget)) TObjectPtr<USizeBox> SizeBox;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget)) TObjectPtr<UProgressBar> TimeBar;
 };

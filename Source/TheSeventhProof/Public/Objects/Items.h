@@ -21,6 +21,13 @@ class THESEVENTHPROOF_API AItems : public ABaseInteractable
 
 public:
 	AItems();
+#pragma region Getters&Setters
+	
+	[[nodiscard]] UFUNCTION(BlueprintCallable) EItemNames GetItemName() const
+	{
+		return ItemName;
+	}
+#pragma endregion Getters&Setters
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components") TObjectPtr<USceneComponent> SceneComponent;
@@ -37,14 +44,5 @@ protected:
 	virtual void Interact_Implementation() override;
 
 private:
-
-public:
-#pragma region Getters&Setters
-	
-	[[nodiscard]] UFUNCTION(BlueprintCallable) EItemNames GetItemName() const
-	{
-		return ItemName;
-	}
-#pragma endregion Getters&Setters
 	
 };

@@ -9,7 +9,6 @@
 #include "GameFramework/Character.h"
 #include "InputAction.h"
 #include "InputActionValue.h"
-#include "Objects/Inspectables.h"
 #include "States/PlayerStates.h"
 #include "PlayerCharacter.generated.h"
 
@@ -31,8 +30,8 @@ class AReads;
 
 #pragma endregion Forward Declarations
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSeeingInteractableSignature, UClass*, InteractableType);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteractingSignature, AActor*, InteractedObject);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSeeingInteractable, UClass*, InteractableType);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteracting, AActor*, InteractedObject);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnItemAddedToInventory);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCancelInput);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryInput);
@@ -54,12 +53,17 @@ public:
 		return Inventory;
 	}
 	
+	void SetInspectedObject(const TObjectPtr<AInspectables>& NewInspectedObject)
+	{
+		this->InspectedObject = NewInspectedObject;
+	}
+	
 #pragma endregion Getters&Setters
 
 #pragma region Delegates
 	
-	UPROPERTY(BlueprintAssignable) FOnSeeingInteractableSignature OnSeeingInteractable;
-	UPROPERTY(BlueprintAssignable) FOnInteractingSignature OnInteracting;
+	UPROPERTY(BlueprintAssignable) FOnSeeingInteractable OnSeeingInteractableDelegate;
+	UPROPERTY(BlueprintAssignable) FOnInteracting OnInteractingDelegate;
 	UPROPERTY(BlueprintAssignable) FOnCancelInput OnCancelInputDelegate;
 	UPROPERTY(BlueprintAssignable) FOnItemAddedToInventory OnItemAddedToInventoryDelegate;
 	UPROPERTY(BlueprintAssignable) FOnInventoryInput OnInventoryInputDelegate;
@@ -111,8 +115,8 @@ protected:
 	void LookAround(const FInputActionValue& Value);
 	void LookUp(const FInputActionValue& Value);
 	void Inspect (const FInputActionValue& Value);
-	void FlashLightToggle(const FInputActionInstance& Value);
-	void InventoryToggle(const FInputActionInstance& Value);
+	void FlashLightToggle(const FInputActionValue& Value);
+	void InventoryToggle(const FInputActionValue& Value);
 	void TraceTimer();
 	void Interact();
 	void Cancel();
@@ -148,11 +152,8 @@ protected:
 #pragma endregion Inventory
 
 #pragma region Inspection
-
-	friend class AInspectables;
 	
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Inspection") TObjectPtr<AInspectables> InspectedObject;
-	bool bInspection;
 
 #pragma endregion Inspection
 

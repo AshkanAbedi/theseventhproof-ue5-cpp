@@ -4,11 +4,11 @@
 // ReSharper disable CppParameterMayBeConstPtrOrRef
 // ReSharper disable CppDefaultCaseNotHandledInSwitchStatement
 
+#include "UI/BaseUI.h"
+#include "UI/BaseHUD.h"
 #include "Character/PlayerCharacter.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
-#include "UI/BaseUI.h"
-#include "UI/BaseHUD.h"
 #include "UI/BaseInventory.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/BackgroundBlur.h"
@@ -32,8 +32,8 @@ void ABaseUI::BeginPlay()
 {
 	Super::BeginPlay();
 	PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	PlayerCharacter->OnSeeingInteractable.AddDynamic(this, &ABaseUI::OnSeeingInteractable);
-	PlayerCharacter->OnInteracting.AddDynamic(this, &ABaseUI::OnInteracting);
+	PlayerCharacter->OnSeeingInteractableDelegate.AddDynamic(this, &ABaseUI::OnSeeingInteractable);
+	PlayerCharacter->OnInteractingDelegate.AddDynamic(this, &ABaseUI::OnInteracting);
 	PlayerCharacter->OnCancelInputDelegate.AddDynamic(this, &ABaseUI::OnCancelInput);
 	PlayerCharacter->OnInventoryInputDelegate.AddDynamic(this, &ABaseUI::OnInventoryInput);
 	

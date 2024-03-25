@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.1",
+	"EngineAssociation": "{A316C762-45F0-B4DE-FBBE-0EA595C5CE0C}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -96,6 +96,10 @@
 			"Name": "MounteaDialogueSystem",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/ea38ae1f87b24807a66fdf4fa65ef521"
+		},
+		{
+			"Name": "ModelViewViewModel",
+			"Enabled": true
 		}
 	]
 }

@@ -27,7 +27,7 @@ public:
 		return ReadImage;
 	}
 
-	[[nodiscard]] FText GetImageText() const
+	[[nodiscard]] FText GetDescription() const
 	{
 		return Description;
 	}

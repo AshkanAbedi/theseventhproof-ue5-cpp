@@ -146,7 +146,7 @@ void APlayerCharacter::TraceTimer()
 	if (bHitSomething)
 	{
 		TracedObject = HitResult.GetActor();
-		OnSeeingInteractable.Broadcast(TracedObject->GetClass());
+		OnSeeingInteractableDelegate.Broadcast(TracedObject->GetClass());
 		// GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("Hit Something: %s"), *TracedObject->GetName()));
 	}
 
@@ -165,7 +165,7 @@ void APlayerCharacter::Interact()
 	if (TracedObject->GetClass()->ImplementsInterface(UInteractInterface::StaticClass()))
 	{
 		InteractedObject = HitResult.GetActor();
-		OnInteracting.Broadcast(InteractedObject);
+		OnInteractingDelegate.Broadcast(InteractedObject);
 		IInteractInterface::Execute_Interact(HitResult.GetActor());
 	}
 }
@@ -174,12 +174,12 @@ void APlayerCharacter::Interact()
 
 #pragma region Core Functions
 
-void APlayerCharacter::FlashLightToggle(const FInputActionInstance& Value)
+void APlayerCharacter::FlashLightToggle(const FInputActionValue& Value)
 {
 	FlashLight->ToggleVisibility();
 }
 
-void APlayerCharacter::InventoryToggle(const FInputActionInstance& Value)
+void APlayerCharacter::InventoryToggle(const FInputActionValue& Value)
 {
 	OnInventoryInputDelegate.Broadcast();
 }

@@ -52,7 +52,7 @@ void AInspectables::TimelineStarted(const float Output)
 	const float LerpY = FMath::Lerp(StartLocation.GetLocation().Y, DestPoint.Y, Output);
 	const float LerpZ = FMath::Lerp(StartLocation.GetLocation().Z, DestPoint.Z, Output);
 	StaticMeshComponent->SetWorldLocation(FVector(LerpX, LerpY, LerpZ));
-	PlayerCharacter->InspectedObject = this;
+	PlayerCharacter->SetInspectedObject(this);
 	PlayerCharacter->MainCamera->SetFieldOfView(FMath::Lerp(80.f, 75.f, Output));
 	PlayerCharacter->PostProcessComponent->Settings.DepthOfFieldFocalDistance = FMath::Lerp(0.f, 15.f, Output);
 	PlayerCharacter->PlayerStates = EPlayerState::EPS_Inspecting;
@@ -63,7 +63,7 @@ void AInspectables::ReturnToStart()
 	if (IsValid(PlayerCharacter) && PlayerCharacter->PlayerStates == EPlayerState::EPS_Inspecting)
 	{
 		StaticMeshComponent->SetWorldTransform(StartLocation);
-		PlayerCharacter->InspectedObject = nullptr;
+		PlayerCharacter->SetInspectedObject(nullptr);
 		PlayerCharacter->MainCamera->SetFieldOfView(80.f);
 		PlayerCharacter->PostProcessComponent->Settings.DepthOfFieldFocalDistance = 0.f;
 		PlayerCharacter->PlayerStates = EPlayerState::EPS_Normal;
